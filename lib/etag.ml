@@ -33,21 +33,17 @@
 
 let escape etag =
   Printf.sprintf "%S" etag
-;;
 
 let unescape s =
   let l = String.length s in
   if l > 0 && String.get s 0 = '"'
   then Scanf.sscanf s "%S" (fun u -> u)
   else s
-;;
 
 let re_split_ws =
   let open Re in
   let space = greedy (rep space) in
   fun t -> split (compile (seq [space; t; space]))
-;;
 
 let from_header s =
   List.map unescape (re_split_ws (Re.char ',') s)
-;;

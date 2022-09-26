@@ -913,7 +913,6 @@ module Make(IO:IO)(Clock:CLOCK) = struct
     let rd = Rd.make ~req_body:body ?dispatch_path ?path_info ~request () in
     let logic = new logic ~resource ~rd () in
     logic#run
-  ;;
 
   let dispatch table =
     let table =

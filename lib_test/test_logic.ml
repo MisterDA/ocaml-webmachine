@@ -419,7 +419,6 @@ let with_test_resource f =
     resource, (fun request -> run (logic ~body:`Empty ~request ()))
   in
   logic (f resource)
-;;
 
 let with_test_resource' f =
   let resource, logic =
@@ -428,22 +427,18 @@ let with_test_resource' f =
     resource, (fun (request, body) -> run (logic ~body ~request ()))
   in
   logic (f resource)
-;;
 
 let assert_status ~msg (status_code, _, _, _) status =
   assert_equal ~msg ~printer:string_of_int
     status Code.(code_of_status status_code)
-;;
 
 let assert_path ~msg (_, _, _, p1) p2 =
   let printer s = Printf.sprintf "[%s]" (String.concat "; " s) in
   assert_equal ~msg ~printer p2 p1
-;;
 
 let assert_header ~msg (_, headers, _, _) header value =
   let printer = function None -> "<none>" | Some x -> x in
   assert_equal ~msg ~printer (Header.get headers header) (Some value)
-;;
 
 (* BEGIN TESTS *)
 
@@ -453,8 +448,7 @@ let service_unavailable _test_ctxt =
     Request.make ~meth:`HEAD Uri.(of_string "/")
   end in
   assert_path ~msg:"503 path" result Path.to_b13;
-  assert_status ~msg:"503 result" result 503;
-;;
+  assert_status ~msg:"503 result" result 503
 
 (*
 %% 503 result via B13 (at ping)
@@ -506,8 +500,7 @@ let not_implemented_b12 _test_ctxt =
     Request.make ~meth:`DELETE Uri.(of_string "/")
   end in
   assert_path ~msg:"503 path" result Path.to_b12;
-  assert_status ~msg:"501 result" result 501;
-;;
+  assert_status ~msg:"501 result" result 501
 
 let not_implemented_b6 _test_ctxt =
   let result = with_test_resource begin fun resource ->
@@ -516,8 +509,7 @@ let not_implemented_b6 _test_ctxt =
     Request.make ~meth:`GET Uri.(of_string "/")
   end in
   assert_path ~msg:"501 path" result Path.to_b6;
-  assert_status ~msg:"501 result" result 501;
-;;
+  assert_status ~msg:"501 result" result 501
 
 let uri_too_long_b11 _test_ctxt =
   let result = with_test_resource begin fun resource ->
@@ -526,8 +518,7 @@ let uri_too_long_b11 _test_ctxt =
     Request.make ~meth:`GET Uri.(of_string "/toolong")
   end in
   assert_path ~msg:"414 path" result Path.to_b11;
-  assert_status ~msg:"414 result via B11" result 414;
-;;
+  assert_status ~msg:"414 result via B11" result 414
 
 let unsupported_media_type_b5 _test_ctxt =
   let result = with_test_resource begin fun resource ->
@@ -536,8 +527,7 @@ let unsupported_media_type_b5 _test_ctxt =
     Request.make ~meth:`GET Uri.(of_string "/")
   end in
   assert_path ~msg:"415 path" result Path.to_b5;
-  assert_status ~msg:"415 result via B5" result 415;
-;;
+  assert_status ~msg:"415 result via B5" result 415
 
 let request_entity_too_large_b4 _test_ctxt =
   let result = with_test_resource begin fun resource ->
@@ -546,8 +536,7 @@ let request_entity_too_large_b4 _test_ctxt =
     Request.make ~meth:`GET Uri.(of_string "/")
   end in
   assert_path ~msg:"413 path" result Path.to_b4;
-  assert_status ~msg:"413 result via B4" result 413;
-;;
+  assert_status ~msg:"413 result via B4" result 413
 
 let head_method_allowed _test_ctxt =
   let result = with_test_resource begin fun resource ->
@@ -555,8 +544,7 @@ let head_method_allowed _test_ctxt =
     Request.make ~meth:`HEAD Uri.(of_string "/foo")
   end in
   assert_path ~msg:"200 from head method allowed" result Path.to_o18_no_acpthead;
-  assert_status ~msg:"200 from head method allowed" result 200;
-;;
+  assert_status ~msg:"200 from head method allowed" result 200
 
 let head_method_not_allowed _test_ctxt =
   let result = with_test_resource begin fun resource ->
@@ -565,8 +553,7 @@ let head_method_not_allowed _test_ctxt =
   end in
   assert_path ~msg:"405 from head method not allowed" result Path.to_b10;
   assert_status ~msg:"405 from head method not allowed" result 405;
-  assert_header ~msg:"405 from head method now allowed" result "allow" "GET,POST,PUT";
-;;
+  assert_header ~msg:"405 from head method now allowed" result "allow" "GET,POST,PUT"
 
 let non_standard_method_501 _test_ctxt =
   let result = with_test_resource begin fun resource ->
@@ -574,7 +561,6 @@ let non_standard_method_501 _test_ctxt =
     Request.make ~meth:(`Other "FOO") Uri.(of_string "/foo")
   end in
   assert_status ~msg:"501 from non-standard method" result 501
-;;
 
 let non_standard_method_200 _test_ctxt =
   let method_ = "FOO" in
@@ -584,7 +570,6 @@ let non_standard_method_200 _test_ctxt =
     Request.make ~meth:(`Other method_) Uri.(of_string "/foo")
   end in
   assert_status ~msg:"200 from non-standard method" result 200
-;;
 
 let bad_request_b9 _test_ctxt =
   let result = with_test_resource begin fun resource ->
@@ -593,8 +578,7 @@ let bad_request_b9 _test_ctxt =
     Request.make ~meth:`GET Uri.(of_string "/")
   end in
   assert_path ~msg:"400 result via B9" result Path.to_b9;
-  assert_status ~msg:"400 result via B9" result 400;
-;;
+  assert_status ~msg:"400 result via B9" result 400
 
 let simple_get _test_ctxt =
   let result = with_test_resource begin fun resource ->
@@ -603,8 +587,7 @@ let simple_get _test_ctxt =
     Request.make ~meth:`GET Uri.(of_string "/foo")
   end in
   assert_path ~msg:"200 from a get" result Path.to_o18_no_acpthead;
-  assert_status ~msg:"200 from a get" result 200;
-;;
+  assert_status ~msg:"200 from a get" result 200
 
 let not_acceptable_c4 _test_ctxt =
   let headers = Header.of_list [("Accept", "video/mp4")] in
@@ -613,8 +596,7 @@ let not_acceptable_c4 _test_ctxt =
     Request.make ~headers ~meth:`GET Uri.(of_string "/")
   end in
   assert_path ~msg:"406 result via C4" result Path.to_c4;
-  assert_status ~msg:"406 result via C4" result 406;
-;;
+  assert_status ~msg:"406 result via C4" result 406
 
 let not_acceptable_d5_c4 _test_ctxt =
   let headers = Header.of_list
@@ -627,8 +609,7 @@ let not_acceptable_d5_c4 _test_ctxt =
     Request.make ~headers ~meth:`GET Uri.(of_string "/")
   end in
   assert_path ~msg:"406 result via D5 via C4" result Path.to_d5_via_c4;
-  assert_status ~msg:"406 result via D5 via C4" result 406;
-;;
+  assert_status ~msg:"406 result via D5 via C4" result 406
 
 let not_acceptable_d5_c3 _test_ctxt =
   let headers = Header.of_list [("Accept-Language", "x-pig-latin")] in
@@ -639,8 +620,7 @@ let not_acceptable_d5_c3 _test_ctxt =
     Request.make ~headers ~meth:`GET Uri.(of_string "/")
   end in
   assert_path ~msg:"406 result via D5 via C3" result Path.to_d5_via_c3;
-  assert_status ~msg:"406 result via D5 via C3" result 406;
-;;
+  assert_status ~msg:"406 result via D5 via C3" result 406
 
 let not_acceptable_e6_d5_c3 _test_ctxt =
   let headers = Header.of_list
@@ -653,8 +633,7 @@ let not_acceptable_e6_d5_c3 _test_ctxt =
     Request.make ~headers ~meth:`GET Uri.(of_string "/")
   end in
   assert_path ~msg:"406 result via E6, D5, C3" result Path.to_e6_via_d5_c3;
-  assert_status ~msg:"406 result via E6, D5, C3" result 406;
-;;
+  assert_status ~msg:"406 result via E6, D5, C3" result 406
 
 let not_acceptable_f7_e6_d5_c4 _test_ctxt =
   let headers = Header.of_list
@@ -672,8 +651,7 @@ let not_acceptable_f7_e6_d5_c4 _test_ctxt =
     Request.make ~headers ~meth:`GET Uri.(of_string "/")
   end in
   assert_path ~msg:"406 result via D7, E6, D5, C4" result Path.to_f7_via_e6_d5_c4;
-  assert_status ~msg:"406 result via D7, E6, D5, C4" result 406;
-;;
+  assert_status ~msg:"406 result via D7, E6, D5, C4" result 406
 
 let precond_fail_no_resource _test_ctxt =
   let headers = Header.of_list [("If-Match", "*")] in
@@ -683,8 +661,7 @@ let precond_fail_no_resource _test_ctxt =
     Request.make ~headers ~meth:`GET Uri.(of_string "/")
   end in
   assert_path ~msg:"412 result via H7" result Path.to_h7_no_acpthead;
-  assert_status ~msg:"412 result via H7" result 412;
-;;
+  assert_status ~msg:"412 result via H7" result 412
 
 let precond_fail_g11 _test_ctxt =
   let headers = Header.of_list [("If-Match", "\"v0\", \"v1\"")] in
@@ -694,8 +671,7 @@ let precond_fail_g11 _test_ctxt =
     Request.make ~headers ~meth:`GET Uri.(of_string "/")
   end in
   assert_path ~msg:"412 result via G11" result Path.to_g11_no_acpthead;
-  assert_status ~msg:"412 result via G11" result 412;
-;;
+  assert_status ~msg:"412 result via G11" result 412
 
 let precond_fail_h12 _test_ctxt =
   let ten_am = "Wed, 20 Feb 2013 10:00:00 GMT" in
@@ -707,8 +683,7 @@ let precond_fail_h12 _test_ctxt =
     Request.make ~headers ~meth:`GET Uri.(of_string "/"), `String "foo"
   end in
   assert_path ~msg:"412 result via h12, i13, i12, h10, h11" result Path.to_h12_no_acpthead;
-  assert_status ~msg:"412 result via h12, i13, i12, h10, h11" result 412;
-;;
+  assert_status ~msg:"412 result via h12, i13, i12, h10, h11" result 412
 
 
 let precond_fail_j18 _test_ctxt =
@@ -719,8 +694,7 @@ let precond_fail_j18 _test_ctxt =
   end in
   assert_path ~msg:"412 result via J18 via I13 via I12 via H10" result Path.to_j18_no_acpthead;
   (* TODO fix these ~msg strings*)
-  assert_status ~msg:"412 result via J18 via I13 via I12 via H10" result 412;
-;;
+  assert_status ~msg:"412 result via J18 via I13 via I12 via H10" result 412
 
 let precond_fail_j18_via_k13 _test_ctxt =
   let headers = Header.of_list [("If-Match", "v1");
@@ -734,8 +708,7 @@ let precond_fail_j18_via_k13 _test_ctxt =
   end in
   assert_path ~msg:"412 result via J18 via K13 via H11 via G11" result Path.to_j18_no_acpthead_2;
   (* TODO fix these ~msg strings*)
-  assert_status ~msg:"412 result via J18 via K13 via H11 via G11" result 412;
-;;
+  assert_status ~msg:"412 result via J18 via K13 via H11 via G11" result 412
 
 let precond_fail_j18_via_h12 _test_ctxt =
   let ten_am =  "Wed, 20 Feb 2013 10:00:00 GMT" in
@@ -750,8 +723,7 @@ let precond_fail_j18_via_h12 _test_ctxt =
     Request.make ~headers ~meth:`PUT Uri.(of_string "/"), `String "foo"
   end in
   assert_path ~msg:"412 result via J18 via I13 via I12 via H12" result Path.to_j18_no_acpthead_3;
-  assert_status ~msg:"412 result via J18 via I13 via I12 via H12" result 412;
-;;
+  assert_status ~msg:"412 result via J18 via I13 via I12 via H12" result 412
 
 let content_valid _test_ctxt =
   let headers = Header.of_list [("Content-Type", "text/plain")] in
@@ -763,7 +735,6 @@ let content_valid _test_ctxt =
   let msg = "204 result via o20, p11, o14" in
   assert_path ~msg result Path.to_o20_via_p11_via_o14_no_acpthead;
   assert_status ~msg result 204
-;;
 
 (*
 %% 204 result, content-md5 header matches
@@ -835,8 +806,7 @@ let authorized_b8 _test_ctxt =
     Request.make ~meth:`GET Uri.(of_string "/authorisedfoo")
   end in
   assert_path ~msg:"401 result via B9" result Path.to_b8;
-  assert_status ~msg:"401 result via B8" result 401;
-;;
+  assert_status ~msg:"401 result via B8" result 401
 
 let forbidden_b7 _test_ctxt =
   let result = with_test_resource begin fun resource ->
@@ -845,8 +815,7 @@ let forbidden_b7 _test_ctxt =
     Request.make ~meth:`GET Uri.(of_string "/forbiddenfoo")
   end in
   assert_path ~msg:"403 result via B7" result Path.to_b7;
-  assert_status ~msg:"403 result via B7" result 403;
-;;
+  assert_status ~msg:"403 result via B7" result 403
 
 
 let options_b3 _test_ctxt =
@@ -855,8 +824,7 @@ let options_b3 _test_ctxt =
     Request.make ~meth:`OPTIONS Uri.(of_string "/")
   end in
   assert_path ~msg:"200 result via OPTIONS" result Path.to_b3;
-  assert_status ~msg:"200 result via OPTIONS" result 200;
-;;
+  assert_status ~msg:"200 result via OPTIONS" result 200
 
 let variances_o18 _test_ctxt =
   let result = with_test_resource begin fun resource ->
@@ -869,8 +837,7 @@ let variances_o18 _test_ctxt =
     Request.make ~meth:`GET Uri.(of_string "/foo")
   end in
   assert_path ~msg:"200 result with Vary" result Path.to_o18_no_acpthead;
-  assert_status ~msg:"200 result with Vary" result 200;
-;;
+  assert_status ~msg:"200 result with Vary" result 200
 
 let variances_o18_2 _test_ctxt =
   let result = with_test_resource begin fun resource ->
@@ -884,8 +851,7 @@ let variances_o18_2 _test_ctxt =
     Request.make ~meth:`GET Uri.(of_string "/foo")
   end in
   assert_path ~msg:"200 result with other Vary" result Path.to_o18_no_acpthead;
-  assert_status ~msg:"200 result with other Vary" result 200;
-;;
+  assert_status ~msg:"200 result with other Vary" result 200
 
 (*
 %% 200 result with body generation
@@ -913,8 +879,7 @@ let multiple_choices_o18 _test_ctxt =
     Request.make ~meth:`GET Uri.(of_string "/foo");
   end in
   assert_path ~msg:"300 via o18" result Path.to_o18_no_acpthead;
-  assert_status ~msg:"300 via o18" result 300;
-;;
+  assert_status ~msg:"300 via o18" result 300
 
 (*
 %% 301 result via I4
@@ -967,8 +932,7 @@ let not_modified_j18 _test_ctxt =
     Request.make ~headers ~meth:`GET Uri.(of_string "/foo")
   end in
   assert_path ~msg:"304 path" result Path.to_j18_no_acpthead;
-  assert_status ~msg:"304 result with if-none-match" result 304;
-;;
+  assert_status ~msg:"304 result with if-none-match" result 304
 
 (* %% 304 result via J18 via K13 via H11 via G11 *)
 let not_modified_j18_via_k13 _test_ctxt =
@@ -983,8 +947,7 @@ let not_modified_j18_via_k13 _test_ctxt =
     Request.make ~headers ~meth:`GET Uri.(of_string "/foo")
   end in
   assert_path ~msg:"304 path" result Path.to_j18_no_acpthead_2;
-  assert_status ~msg:"304 result with if-none-match" result 304;
-;;
+  assert_status ~msg:"304 result with if-none-match" result 304
 
 let not_modified_j18_multiple_if_match _test_ctxt =
   let headers = Header.of_list [
@@ -998,8 +961,7 @@ let not_modified_j18_multiple_if_match _test_ctxt =
     Request.make ~headers ~meth:`GET Uri.(of_string "/foo")
   end in
   assert_path ~msg:"304 path" result Path.to_j18_no_acpthead_2;
-  assert_status ~msg:"304 result with if-none-match" result 304;
-;;
+  assert_status ~msg:"304 result with if-none-match" result 304
 
 let not_modified_j18_multiple_if_none_match _test_ctxt =
   let headers = Header.of_list [
@@ -1011,8 +973,7 @@ let not_modified_j18_multiple_if_none_match _test_ctxt =
     Request.make ~headers ~meth:`GET Uri.(of_string "/foo")
   end in
   assert_path ~msg:"304 path" result Path.to_j18_via_k13_i13_h10_g8_f6_e6_d5_c4;
-  assert_status ~msg:"304 result with if-none-match" result 304;
-;;
+  assert_status ~msg:"304 result with if-none-match" result 304
 
 let not_modified_j18_multiple_if_none_match_first _test_ctxt =
   let headers = Header.of_list [
@@ -1024,8 +985,7 @@ let not_modified_j18_multiple_if_none_match_first _test_ctxt =
     Request.make ~headers ~meth:`GET Uri.(of_string "/foo")
   end in
   assert_path ~msg:"304 path" result Path.to_j18_via_k13_i13_h10_g8_f6_e6_d5_c4;
-  assert_status ~msg:"304 result with if-none-match" result 304;
-;;
+  assert_status ~msg:"304 result with if-none-match" result 304
 
 (* %% 304 result via J18 via I13 via I12 via H12 *)
 let not_modified_j18_via_h12 _test_ctxt =
@@ -1043,8 +1003,7 @@ let not_modified_j18_via_h12 _test_ctxt =
     Request.make ~headers ~meth:`GET Uri.(of_string "/foo")
   end in
   assert_path ~msg:"304 path" result Path.to_j18_no_acpthead_3;
-  assert_status ~msg:"304 result with if-none-match" result 304;
-;;
+  assert_status ~msg:"304 result with if-none-match" result 304
 
 let not_modified_l17 _test_ctxt =
   let first_day_of_last_year = "Tue, 01 Jan 2015 00:00:00 GMT" in
@@ -1056,8 +1015,7 @@ let not_modified_l17 _test_ctxt =
     Request.make ~headers ~meth:`GET Uri.(of_string "/foo");
   end in
   assert_path ~msg:"304 via l17" result Path.to_l17_no_acpthead;
-  assert_status ~msg:"304 via l17" result 304;
-;;
+  assert_status ~msg:"304 via l17" result 304
 
 (*
 %% 303 result via N11 using request data rewriting
@@ -1134,8 +1092,7 @@ let created_n11_resource _test_ctxt =
     Request.make ~headers ~meth:`POST Uri.(of_string "/foo")
   end in
   assert_status ~msg:"201 via n11" result 201;
-  assert_header ~msg:"201 via n11 sets location header" result "Location" "/foo/new1";
-;;
+  assert_header ~msg:"201 via n11 sets location header" result "Location" "/foo/new1"
 
 (*
 %% 303 result via N5
@@ -1174,8 +1131,7 @@ let not_found_m7 _test_ctxt =
     Request.make ~headers ~meth:`POST Uri.(of_string "/foo")
   end in
   assert_status ~msg:"404 via m7" result 404;
-  assert_path ~msg:"404 path via m7" result Path.to_m7_no_acpthead;
-;;
+  assert_path ~msg:"404 path via m7" result Path.to_m7_no_acpthead
 
 (*
 %% 201 result via P11 from POST
@@ -1246,8 +1202,7 @@ let gone_m5 _test_ctxt =
     Request.make Uri.(of_string "/gone")
   end in
   assert_path ~msg:"410 via m5" result Path.to_m5_no_acpthead;
-  assert_status ~msg:"410 via m5" result 410;
-;;
+  assert_status ~msg:"410 via m5" result 410
 
 let gone_n5 _test_ctxt =
   let result = with_test_resource begin fun resource ->
@@ -1258,8 +1213,7 @@ let gone_n5 _test_ctxt =
     Request.make ~headers ~meth:`POST Uri.(of_string "/post")
   end in
   assert_path ~msg:"410 via n5" result Path.to_n5_no_acpthead;
-  assert_status ~msg:"410 via n5" result 410;
-;;
+  assert_status ~msg:"410 via n5" result 410
 
 (*
 %% 202 result via M20 - The delete has been "accepted" but it didn't actually

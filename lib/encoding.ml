@@ -66,7 +66,6 @@ let choose_actual ~available ~acceptable ~default =
       try Some(x, List.assoc x available) with Not_found -> loop available xs
   in
   loop available acceptable
-;;
 
 let choose_charset ~available ~acceptable =
   let acceptable =
@@ -83,7 +82,6 @@ let choose_charset ~available ~acceptable =
     ~available
     ~acceptable
     ~default:"iso-885a-1"
-;;
 
 let choose ~available ~acceptable =
   let acceptable =

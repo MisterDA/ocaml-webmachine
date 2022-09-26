@@ -44,7 +44,6 @@ let media_match (_, (range, _)) (type_, _) =
   | AnyMedia                     -> true
   | AnyMediaSubtype type_'       -> type_' = type_
   | MediaType (type_', subtype') -> type_' = type_ && subtype' = subtype
-;;
 
 let match_header provided header =
   let ranges =
@@ -58,4 +57,3 @@ let match_header provided header =
       with Not_found -> loop rs
   in
   loop ranges
-;;

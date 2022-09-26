@@ -139,6 +139,5 @@ let main () =
   Server.create ~on_handler_error:`Raise (Tcp.Where_to_listen.of_port port) handler
   >>> (fun _server ->
     Log.Global.info "hello_async: listening on 0.0.0.0:%d%!" port)
-;;
 
-Scheduler.go_main ~main ()
+let () = never_returns (Scheduler.go_main ~main ())

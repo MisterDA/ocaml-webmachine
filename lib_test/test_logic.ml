@@ -340,10 +340,6 @@ module Path = struct
   let to_h10_via_g8_f6_e6_d5_c4 =
     to_g7_via_f6_e6_d5_c4 @ ["v3g8"; "v3h10"]
 
-  (* n11 - two paths to n11 without accept headers *)
-  let to_n11_via_m7_no_acpthead = to_m7_no_acpthead @ ["v3n11"]
-  let to_n11_via_n5_no_acpthead = to_n5_no_acpthead @ ["v3n11"]
-
   (* h11 - the path to h11 without accept headers = via g11 *)
   let to_h11_via_g11_f6_e6_d5_c4 =
     to_g11_no_acpthead @ ["v3h10"; "v3h11"]
@@ -367,9 +363,6 @@ module Path = struct
 
   (* m16 - a path to m16 without accept headers *)
   let to_m16_no_acpthead = to_l13_no_acpthead @ ["v3m16"]
-
-  (* m20 - a path to m20 without accept headers *)
-  let to_m20_no_acpthead = to_m16_no_acpthead @ ["v3m20"]
 
   (* n16 - a path to n16 without accept headers *)
   let to_n16_no_acpthead = to_m16_no_acpthead @ ["v3n16"]
@@ -410,19 +403,13 @@ module Path = struct
   let to_j18_no_acpthead_3 =
     to_h12_no_acpthead_2 @ ["v3i12"; "v3i13"; "v3j18"]
 
-  (* p11 - three paths to p11 without accept headers, via n11, p3, or o14 *)
-  let to_p11_via_n11_no_acpthead =
-    to_n11_via_m7_no_acpthead @ ["v3p11"]
+  (* p11 - two paths to p11 without accept headers, via p3 or o14 *)
   let to_p11_via_p3_no_acpthead = to_p3_no_acpthead @ ["v3p11"]
   let to_p11_via_o14_no_acpthead = to_o14_no_acpthead @ ["v3p11"]
 
   (* o20 - the path to o20 via p11 via o14 *)
   let to_o20_via_p11_via_o14_no_acpthead =
     to_p11_via_o14_no_acpthead @ ["v3o20"]
-
-  (* o18 *)
-  let to_o18_no_acpthead_via_ifmatch =
-    to_k13_via_h11_g11_f6_e6_d5_c4 @ ["v3l13";"v3m16";"v3n16";"v3o16";"v3o18"]
 end
 
 let with_test_resource f =

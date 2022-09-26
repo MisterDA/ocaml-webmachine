@@ -8,7 +8,7 @@ writing RESTful APIs. As the name suggests, this is an OCaml port of the
 [cohttp]: https://github.com/mirage/ocaml-cohttp
 [webmachine]: https://github.com/webmachine/webmachine
 
-[![Build Status](https://travis-ci.com/inhabitedtype/ocaml-webmachine.svg?branch=master)](https://travis-ci.com/inhabitedtype/ocaml-webmachine)
+[![OCaml-CI Build Status](https://img.shields.io/endpoint?url=https://ci.ocamllabs.io/badge/inhabitedtype/ocaml-webmachine/master)](https://ci.ocamllabs.io/github/inhabitedtype/ocaml-webmachine)
 
 ## Installation
 

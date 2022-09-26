@@ -105,7 +105,9 @@ class disp_path = object
 end
 
 
-open OUnit
+open OUnit2
+
+let (@?) = OUnitAssert.assert_bool
 
 let with_path path table =
   let open Cohttp in
@@ -114,14 +116,14 @@ let with_path path table =
   let request = Request.make ~meth:`GET ~headers uri in
   Webmachine.dispatch' table ~body:`Empty ~request
 
-let empty () =
+let empty _test_ctx =
   "an empty table will produce no result"
     @? begin match run (with_path "/" []) with
        | None -> true
        | _    -> false
     end
 
-let single () =
+let single _test_ctx =
   let table = ["/", fun () -> new base_path "root"] in
   "a single entry for the root will dispatch the root to it"
     @? begin match run (with_path "/" table) with
@@ -134,7 +136,7 @@ let single () =
        | _    -> false
     end
 
-let overlap () =
+let overlap _test_ctx =
   let table =
     [ ("/foo"    , fun () -> new base_path "/foo")
     ; ("/foo/bar", fun () -> new base_path "/foo/bar")
@@ -160,7 +162,7 @@ let overlap () =
        | _                                   -> false
     end
 
-let keys () =
+let keys _test_ctx =
   let table =
     [ ("/foo/:id"         , fun () -> new param_path "id")
     ; ("/foo/:id/:bar"    , fun () -> new param_path "bar")
@@ -183,7 +185,7 @@ let keys () =
        | _                               -> false
     end
 
-let wildcard () =
+let wildcard _test_ctx =
   let table = ["/foo/*", fun () -> new disp_path] in
   "a trailing wildcard pattern matches just the prefix"
     @? begin match run (with_path "/foo" table) with
@@ -196,17 +198,6 @@ let wildcard () =
        | _                               -> false
     end
 
-let rec was_successful =
-  function
-    | [] -> true
-    | RSuccess _::t
-    | RSkip _::t ->
-        was_successful t
-    | RFailure _::_
-    | RError _::_
-    | RTodo _::_ ->
-        false
-
 let _ =
   let tests = [
     "empty" >:: empty;
@@ -216,11 +207,4 @@ let _ =
     "wildcard" >:: wildcard
   ] in
   let suite = (Printf.sprintf "test logic") >::: tests in
-  let verbose = ref false in
-  let set_verbose _ = verbose := true in
-  Arg.parse
-    [("-verbose", Arg.Unit set_verbose, "Run the test in verbose mode.");]
-    (fun x -> raise (Arg.Bad ("Bad argument : " ^ x)))
-    ("Usage: " ^ Sys.argv.(0) ^ " [-verbose]");
-  if not (was_successful (run_test_tt ~verbose:!verbose suite))
-  then exit 1
+  run_test_tt_main suite

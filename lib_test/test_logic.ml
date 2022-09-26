@@ -243,7 +243,7 @@ class test_resource = object
 
 end
 
-open OUnit
+open OUnit2
 
 module Path = struct
   let to_b13 = ["v3b13"]
@@ -447,7 +447,7 @@ let assert_header ~msg (_, headers, _, _) header value =
 
 (* BEGIN TESTS *)
 
-let service_unavailable () =
+let service_unavailable _test_ctxt =
   let result = with_test_resource begin fun resource ->
     resource#set_service_available false;
     Request.make ~meth:`HEAD Uri.(of_string "/")
@@ -499,7 +499,7 @@ size_stream_raises_error(ReqData, Context) ->
     {{stream, 1, Error}, ReqData, Context}.
 *)
 
-let not_implemented_b12 () =
+let not_implemented_b12 _test_ctxt =
   let result = with_test_resource begin fun resource ->
     resource#set_allowed_methods http_1_0_methods;
     resource#set_known_methods http_1_0_methods;
@@ -509,7 +509,7 @@ let not_implemented_b12 () =
   assert_status ~msg:"501 result" result 501;
 ;;
 
-let not_implemented_b6 () =
+let not_implemented_b6 _test_ctxt =
   let result = with_test_resource begin fun resource ->
     resource#set_allowed_methods default_allowed_methods;
     resource#set_valid_content_headers false;
@@ -519,7 +519,7 @@ let not_implemented_b6 () =
   assert_status ~msg:"501 result" result 501;
 ;;
 
-let uri_too_long_b11 () =
+let uri_too_long_b11 _test_ctxt =
   let result = with_test_resource begin fun resource ->
     resource#set_allowed_methods default_allowed_methods;
     resource#set_uri_too_long true;
@@ -529,7 +529,7 @@ let uri_too_long_b11 () =
   assert_status ~msg:"414 result via B11" result 414;
 ;;
 
-let unsupported_media_type_b5 () =
+let unsupported_media_type_b5 _test_ctxt =
   let result = with_test_resource begin fun resource ->
     resource#set_allowed_methods default_allowed_methods;
     resource#set_known_content_type false;
@@ -539,7 +539,7 @@ let unsupported_media_type_b5 () =
   assert_status ~msg:"415 result via B5" result 415;
 ;;
 
-let request_entity_too_large_b4 () =
+let request_entity_too_large_b4 _test_ctxt =
   let result = with_test_resource begin fun resource ->
     resource#set_allowed_methods default_allowed_methods;
     resource#set_valid_entity_length false;
@@ -549,7 +549,7 @@ let request_entity_too_large_b4 () =
   assert_status ~msg:"413 result via B4" result 413;
 ;;
 
-let head_method_allowed () =
+let head_method_allowed _test_ctxt =
   let result = with_test_resource begin fun resource ->
     resource#set_allowed_methods [`GET; `HEAD];
     Request.make ~meth:`HEAD Uri.(of_string "/foo")
@@ -558,7 +558,7 @@ let head_method_allowed () =
   assert_status ~msg:"200 from head method allowed" result 200;
 ;;
 
-let head_method_not_allowed () =
+let head_method_not_allowed _test_ctxt =
   let result = with_test_resource begin fun resource ->
     resource#set_allowed_methods [`GET; `POST; `PUT];
     Request.make ~meth:`HEAD Uri.(of_string "/foo")
@@ -568,7 +568,7 @@ let head_method_not_allowed () =
   assert_header ~msg:"405 from head method now allowed" result "allow" "GET,POST,PUT";
 ;;
 
-let non_standard_method_501 () =
+let non_standard_method_501 _test_ctxt =
   let result = with_test_resource begin fun resource ->
     resource#set_allowed_methods [`GET; `POST; `PUT];
     Request.make ~meth:(`Other "FOO") Uri.(of_string "/foo")
@@ -576,7 +576,7 @@ let non_standard_method_501 () =
   assert_status ~msg:"501 from non-standard method" result 501
 ;;
 
-let non_standard_method_200 () =
+let non_standard_method_200 _test_ctxt =
   let method_ = "FOO" in
   let result = with_test_resource begin fun resource ->
     resource#set_known_methods (http_1_1_methods @ [`Other method_]);
@@ -586,7 +586,7 @@ let non_standard_method_200 () =
   assert_status ~msg:"200 from non-standard method" result 200
 ;;
 
-let bad_request_b9 () =
+let bad_request_b9 _test_ctxt =
   let result = with_test_resource begin fun resource ->
     resource#set_allowed_methods default_allowed_methods;
     resource#set_malformed_request true;
@@ -596,7 +596,7 @@ let bad_request_b9 () =
   assert_status ~msg:"400 result via B9" result 400;
 ;;
 
-let simple_get () =
+let simple_get _test_ctxt =
   let result = with_test_resource begin fun resource ->
     resource#set_allowed_methods [`GET];
     resource#set_malformed_request false;
@@ -606,7 +606,7 @@ let simple_get () =
   assert_status ~msg:"200 from a get" result 200;
 ;;
 
-let not_acceptable_c4 () =
+let not_acceptable_c4 _test_ctxt =
   let headers = Header.of_list [("Accept", "video/mp4")] in
   let result = with_test_resource begin fun resource ->
     resource#set_allowed_methods [`GET];
@@ -616,7 +616,7 @@ let not_acceptable_c4 () =
   assert_status ~msg:"406 result via C4" result 406;
 ;;
 
-let not_acceptable_d5_c4 () =
+let not_acceptable_d5_c4 _test_ctxt =
   let headers = Header.of_list
     [("Accept", "text/plain"); ("Accept-Language", "x-pig-latin")]
   in
@@ -630,7 +630,7 @@ let not_acceptable_d5_c4 () =
   assert_status ~msg:"406 result via D5 via C4" result 406;
 ;;
 
-let not_acceptable_d5_c3 () =
+let not_acceptable_d5_c3 _test_ctxt =
   let headers = Header.of_list [("Accept-Language", "x-pig-latin")] in
   let result = with_test_resource begin fun resource ->
     resource#set_allowed_methods [`GET];
@@ -642,7 +642,7 @@ let not_acceptable_d5_c3 () =
   assert_status ~msg:"406 result via D5 via C3" result 406;
 ;;
 
-let not_acceptable_e6_d5_c3 () =
+let not_acceptable_e6_d5_c3 _test_ctxt =
   let headers = Header.of_list
     [("Accept-Language", "en-us"); ("Accept-Charset", "iso-8859-1")]
   in
@@ -656,7 +656,7 @@ let not_acceptable_e6_d5_c3 () =
   assert_status ~msg:"406 result via E6, D5, C3" result 406;
 ;;
 
-let not_acceptable_f7_e6_d5_c4 () =
+let not_acceptable_f7_e6_d5_c4 _test_ctxt =
   let headers = Header.of_list
     [("Accept", "text/plain");
      ("Accept-Language", "en-us");
@@ -675,7 +675,7 @@ let not_acceptable_f7_e6_d5_c4 () =
   assert_status ~msg:"406 result via D7, E6, D5, C4" result 406;
 ;;
 
-let precond_fail_no_resource () =
+let precond_fail_no_resource _test_ctxt =
   let headers = Header.of_list [("If-Match", "*")] in
   let result = with_test_resource begin fun resource ->
     resource#set_allowed_methods [`GET];
@@ -686,7 +686,7 @@ let precond_fail_no_resource () =
   assert_status ~msg:"412 result via H7" result 412;
 ;;
 
-let precond_fail_g11 () =
+let precond_fail_g11 _test_ctxt =
   let headers = Header.of_list [("If-Match", "\"v0\", \"v1\"")] in
   let result = with_test_resource begin fun resource ->
     resource#set_allowed_methods [`GET];
@@ -697,7 +697,7 @@ let precond_fail_g11 () =
   assert_status ~msg:"412 result via G11" result 412;
 ;;
 
-let precond_fail_h12 () =
+let precond_fail_h12 _test_ctxt =
   let ten_am = "Wed, 20 Feb 2013 10:00:00 GMT" in
   let five_pm = "Wed, 20 Feb 2013 17:00:00 GMT" in
   let headers = Header.of_list [("If-Unmodified-Since", ten_am)] in
@@ -711,7 +711,7 @@ let precond_fail_h12 () =
 ;;
 
 
-let precond_fail_j18 () =
+let precond_fail_j18 _test_ctxt =
   let headers = Header.of_list [("If-None-Match", "*"); ("Content-Type", "text/plain")] in
   let result = with_test_resource' begin fun resource ->
     resource#set_allowed_methods default_allowed_methods;
@@ -722,7 +722,7 @@ let precond_fail_j18 () =
   assert_status ~msg:"412 result via J18 via I13 via I12 via H10" result 412;
 ;;
 
-let precond_fail_j18_via_k13 () =
+let precond_fail_j18_via_k13 _test_ctxt =
   let headers = Header.of_list [("If-Match", "v1");
                                 ("If-None-Match", "v1");
                                 ("If-Unmodified-Since", "nonsense-date");
@@ -737,7 +737,7 @@ let precond_fail_j18_via_k13 () =
   assert_status ~msg:"412 result via J18 via K13 via H11 via G11" result 412;
 ;;
 
-let precond_fail_j18_via_h12 () =
+let precond_fail_j18_via_h12 _test_ctxt =
   let ten_am =  "Wed, 20 Feb 2013 10:00:00 GMT" in
   let five_pm = "Wed, 20 Feb 2013 17:00:00 GMT" in
   let headers = Header.of_list [("If-Match", "*");
@@ -753,7 +753,7 @@ let precond_fail_j18_via_h12 () =
   assert_status ~msg:"412 result via J18 via I13 via I12 via H12" result 412;
 ;;
 
-let content_valid () =
+let content_valid _test_ctxt =
   let headers = Header.of_list [("Content-Type", "text/plain")] in
   let result = with_test_resource' begin fun resource ->
     resource#set_allowed_methods default_allowed_methods;
@@ -828,7 +828,7 @@ content_md5_custom_inval_b9a() ->
     ok.
 
 *)
-let authorized_b8 () =
+let authorized_b8 _test_ctxt =
   let result = with_test_resource begin fun resource ->
     resource#set_allowed_methods default_allowed_methods;
     resource#set_is_authorized (`Basic "basic");
@@ -838,7 +838,7 @@ let authorized_b8 () =
   assert_status ~msg:"401 result via B8" result 401;
 ;;
 
-let forbidden_b7 () =
+let forbidden_b7 _test_ctxt =
   let result = with_test_resource begin fun resource ->
     resource#set_allowed_methods default_allowed_methods;
     resource#set_forbidden true;
@@ -849,7 +849,7 @@ let forbidden_b7 () =
 ;;
 
 
-let options_b3 () =
+let options_b3 _test_ctxt =
   let result = with_test_resource begin fun resource ->
     resource#set_allowed_methods [`GET; `HEAD; `PUT; `OPTIONS];
     Request.make ~meth:`OPTIONS Uri.(of_string "/")
@@ -858,7 +858,7 @@ let options_b3 () =
   assert_status ~msg:"200 result via OPTIONS" result 200;
 ;;
 
-let variances_o18 () =
+let variances_o18 _test_ctxt =
   let result = with_test_resource begin fun resource ->
     resource#set_allowed_methods default_allowed_methods;
     resource#set_charsets_provided [
@@ -872,7 +872,7 @@ let variances_o18 () =
   assert_status ~msg:"200 result with Vary" result 200;
 ;;
 
-let variances_o18_2 () =
+let variances_o18_2 _test_ctxt =
   let result = with_test_resource begin fun resource ->
     resource#set_allowed_methods default_allowed_methods;
     resource#set_charsets_provided [("utf-8", fun x -> x)];
@@ -901,7 +901,7 @@ ok_o18b() ->
     ok.
 *)
 
-let multiple_choices_o18 () =
+let multiple_choices_o18 _test_ctxt =
   let result = with_test_resource begin fun resource ->
     resource#set_allowed_methods [`GET];
     resource#set_multiple_choices true;
@@ -960,7 +960,7 @@ moved_temporarily_l5() ->
 *)
 
 (* %% 304 result via J18 via K13 via H11 via G11 *)
-let not_modified_j18 () =
+let not_modified_j18 _test_ctxt =
   let headers = Header.of_list [("If-None-Match", "*")] in
   let result = with_test_resource begin fun resource ->
     resource#set_allowed_methods default_allowed_methods;
@@ -971,7 +971,7 @@ let not_modified_j18 () =
 ;;
 
 (* %% 304 result via J18 via K13 via H11 via G11 *)
-let not_modified_j18_via_k13 () =
+let not_modified_j18_via_k13 _test_ctxt =
   let headers = Header.of_list [
       ("If-Match", "\"v1\"");
       ("If-None-Match", "\"v1\"");
@@ -986,7 +986,7 @@ let not_modified_j18_via_k13 () =
   assert_status ~msg:"304 result with if-none-match" result 304;
 ;;
 
-let not_modified_j18_multiple_if_match () =
+let not_modified_j18_multiple_if_match _test_ctxt =
   let headers = Header.of_list [
       ("If-Match", "\"v1\", \"v2\"");
       ("If-None-Match", "\"v1\", \"v2\""); (* this is required for GET/HEAD! *)
@@ -1001,7 +1001,7 @@ let not_modified_j18_multiple_if_match () =
   assert_status ~msg:"304 result with if-none-match" result 304;
 ;;
 
-let not_modified_j18_multiple_if_none_match () =
+let not_modified_j18_multiple_if_none_match _test_ctxt =
   let headers = Header.of_list [
       ("If-None-Match", "\"v1\", \"v2\""); (* this is required for GET/HEAD! *)
     ] in
@@ -1014,7 +1014,7 @@ let not_modified_j18_multiple_if_none_match () =
   assert_status ~msg:"304 result with if-none-match" result 304;
 ;;
 
-let not_modified_j18_multiple_if_none_match_first () =
+let not_modified_j18_multiple_if_none_match_first _test_ctxt =
   let headers = Header.of_list [
       ("If-None-Match", "\"v1\", \"v2\""); (* this is required for GET/HEAD! *)
     ] in
@@ -1028,7 +1028,7 @@ let not_modified_j18_multiple_if_none_match_first () =
 ;;
 
 (* %% 304 result via J18 via I13 via I12 via H12 *)
-let not_modified_j18_via_h12 () =
+let not_modified_j18_via_h12 _test_ctxt =
   let tenAM = "Wed, 20 Feb 2013 10:00:00 GMT"
   and fivePM = "Wed, 20 Feb 2013 17:00:00 GMT"
   in
@@ -1046,7 +1046,7 @@ let not_modified_j18_via_h12 () =
   assert_status ~msg:"304 result with if-none-match" result 304;
 ;;
 
-let not_modified_l17 () =
+let not_modified_l17 _test_ctxt =
   let first_day_of_last_year = "Tue, 01 Jan 2015 00:00:00 GMT" in
   let first_day_of_next_year = "Sun, 01 Jan 2017 00:00:00 GMT" in
   let headers = Header.of_list [("If-Modified-Since", first_day_of_last_year)] in
@@ -1123,7 +1123,7 @@ see_other_n11_resource_calls_base_uri(Value) ->
     ok.
 *)
 
-let created_n11_resource () =
+let created_n11_resource _test_ctxt =
   let result = with_test_resource begin fun resource ->
     resource#set_allowed_methods [`GET; `POST; `PUT];
     resource#set_resource_exists true;
@@ -1165,7 +1165,7 @@ not_found_l7() ->
     ok.
 *)
 
-let not_found_m7 () =
+let not_found_m7 _test_ctxt =
   let result = with_test_resource begin fun resource ->
     resource#set_allowed_methods [`GET; `POST; `PUT];
     resource#set_resource_exists false;
@@ -1194,7 +1194,7 @@ created_p11_post() ->
     ok.
 *)
 
-let create_p11_put () =
+let create_p11_put _test_ctxt =
   let headers = Header.init_with "Content-Type" "text/plain" in
   let result = with_test_resource begin fun resource ->
     resource#set_allowed_methods default_allowed_methods;
@@ -1238,7 +1238,7 @@ conflict_o14() ->
 *)
 
 
-let gone_m5 () =
+let gone_m5 _test_ctxt =
   let result = with_test_resource begin fun resource ->
     resource#set_allowed_methods default_allowed_methods;
     resource#set_resource_exists false;
@@ -1249,7 +1249,7 @@ let gone_m5 () =
   assert_status ~msg:"410 via m5" result 410;
 ;;
 
-let gone_n5 () =
+let gone_n5 _test_ctxt =
   let result = with_test_resource begin fun resource ->
     resource#set_allowed_methods [`GET ; `POST ; `PUT];
     resource#set_resource_exists false;
@@ -1474,17 +1474,6 @@ process_post_for_md5_stream(ReqData, Context, NewLocation) ->
     {true, RDWithLocation, Context}.
 *)
 
-let rec was_successful =
-  function
-    | [] -> true
-    | RSuccess _::t
-    | RSkip _::t ->
-        was_successful t
-    | RFailure _::_
-    | RError _::_
-    | RTodo _::_ ->
-        false
-
 let _ =
   let tests = [
     "service_unavailable" >:: service_unavailable;
@@ -1531,11 +1520,4 @@ let _ =
     "gone n5" >:: gone_n5;
   ] in
   let suite = (Printf.sprintf "test logic") >::: tests in
-  let verbose = ref false in
-  let set_verbose _ = verbose := true in
-  Arg.parse
-    [("-verbose", Arg.Unit set_verbose, "Run the test in verbose mode.");]
-    (fun x -> raise (Arg.Bad ("Bad argument : " ^ x)))
-    ("Usage: " ^ Sys.argv.(0) ^ " [-verbose]");
-  if not (was_successful (run_test_tt ~verbose:!verbose suite))
-  then exit 1
+  run_test_tt_main suite

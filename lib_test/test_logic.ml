@@ -42,7 +42,7 @@ module Id = struct
 end
 
 module ClockMock = struct
-  let now = fun () -> 1526322704
+  let now = fun () -> 946684800
 end
 
 module Webmachine = struct

@@ -38,8 +38,8 @@
     REST-aware layer on top of {{:https://github.com/mirage/ocaml-cohttp} cohttp}.
 
     To use this module, apply the {{!Make}[Make]} functor to an {{!IO}[IO]}
-    and a {{!CLOCK}[CLOCK]} module, and subclass the
-    {{!class-type:S.resource}resouce} virtual class. *)
+    and a {{!CLOCK}[CLOCK]} module, and subclass the {!S.resource} virtual
+    class. *)
 
 open Cohttp
 
@@ -81,10 +81,10 @@ module Rd : sig
   (** [make ~request ()] returns a ['body t] with the following fields
       pouplated from the [request] argument:
       {ul
-      {- [uri]};
-      {- [version]};
-      {- [meth]}; and
-      {- [req_headers]}}.
+      {- [uri]}
+      {- [version]}
+      {- [meth]}
+      {- [req_headers]}}
 
       All other fields will be populated with default values unless they are
       provided as optional arguments *)
@@ -325,7 +325,7 @@ module type S = sig
     (string * (unit -> 'body resource)) list ->
     body:'body -> request:Request.t ->
     (Code.status_code * Header.t * 'body * string list) option io
-  (** [dispatch' routes ~body ~request] works in the same way as {dispatch'}
+  (** [dispatch' routes ~body ~request] works in the same way as {!dispatch}
       except the user can specify path patterns using a string shorthand. For
       example, the following route entry:
 
@@ -340,7 +340,7 @@ end
     Webmachine.Make(IO)(Clock) functor.
 
     Examples:
-
+    {[
     (* static mock time *)
     module MockClock = struct
       let now = fun () -> 1526322704
@@ -365,6 +365,7 @@ end
         let picos_in_seconds = Int64.(to_int (div ps (1_000_000_000_000L))) i
         days_in_seconds + picos_in_seconds
     end
+    ]}
 *)
 module type CLOCK = sig
   val now : unit -> int
